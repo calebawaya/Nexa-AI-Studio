@@ -45,7 +45,7 @@ class FrontendIntegrityTests(unittest.TestCase):
             "connectionStatus", "chatMessages", "customTaskForm",
             "customTaskInput", "exportWorkspaceButton", "importWorkspaceButton",
             "importWorkspaceInput", "savedWorkspacesPanel", "savedWorkspacesList", "savedWorkspaceSearch",
-            "savedWorkspaceStatusFilter", "savedWorkspaceCount", "workspaceName",
+            "savedWorkspaceStatusFilter", "savedWorkspaceCount", "resetSavedWorkspaceFilters", "workspaceName",
             "workspaceStatus", "workspaceNotes",
         ]
         for element_id in required:
@@ -119,6 +119,16 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn('savedWorkspaceStatusFilter.addEventListener("change", listSavedWorkspaces)', script)
         self.assertIn('(selectedStatus === "all" || entry.status === selectedStatus)', script)
         self.assertIn("Showing ${visibleEntries.length} of ${entries.length} saved workspace", script)
+
+    def test_saved_workspace_filters_can_be_reset(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        script = (ROOT / "workspace.js").read_text(encoding="utf-8")
+        self.assertIn('id="resetSavedWorkspaceFilters"', html)
+        self.assertIn('resetSavedWorkspaceFilters.addEventListener("click"', script)
+        self.assertIn('savedWorkspaceSearch.value = ""', script)
+        self.assertIn('savedWorkspaceStatusFilter.value = "all"', script)
+        self.assertIn("listSavedWorkspaces();", script)
+        self.assertIn("savedWorkspaceSearch?.focus();", script)
 
     def test_generated_plan_is_persisted_and_restored_with_workspace(self):
         script = (ROOT / "workspace.js").read_text(encoding="utf-8")
