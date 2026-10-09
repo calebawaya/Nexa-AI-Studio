@@ -29,6 +29,16 @@ A static website frontend with an optional Python/Flask AI backend.
 
 6. Open `http://127.0.0.1:5000/api/health`.
 
+## Run the API tests
+
+After installing dependencies, run:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+These tests cover the health endpoint, missing API-key handling, chat input validation, and a mocked assistant reply. They do not call the paid AI API.
+
 ## Deploy the backend on Render
 
 1. In Render, create a new Blueprint from this repository, or create a Python web service.
