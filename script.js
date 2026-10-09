@@ -100,3 +100,48 @@ clearButton.addEventListener("click", () => {
 });
 
 renderIdeas();
+
+// Browser-only assistant preview. Replace this reply function with a protected backend API
+// when a real AI provider is connected; never put an API key in frontend code.
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+
+function addChatMessage(message, role) {
+  const bubble = document.createElement("div");
+  bubble.className = `chat-message ${role === "user" ? "user-message" : "assistant-message"}`;
+  bubble.textContent = message;
+  chatMessages.append(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function makeLocalReply(message) {
+  const text = message.toLowerCase();
+  if (text.includes("business") || text.includes("earn") || text.includes("paying") || text.includes("money")) {
+    return "A practical starting point is a website that solves one clear problem for local businesses.\n\n1. Choose one audience, such as shops, food sellers, or tutors.\n2. Ask a few potential customers what they struggle with.\n3. Build one useful feature, such as a contact form or simple product catalogue.\n4. Show a demo and ask for feedback before charging.\n\nThis is planning guidance from the local demo, not live AI advice.";
+  }
+  if (text.includes("checklist") || text.includes("beginner") || text.includes("steps")) {
+    return "Beginner website checklist:\n\n1. Write down the site's purpose and audience.\n2. Sketch the homepage on paper.\n3. Build semantic HTML sections.\n4. Style for phone and desktop with CSS.\n5. Add and test interactions with JavaScript.\n6. Check every link and form.\n7. Publish with GitHub Pages and test the live URL.";
+  }
+  if (text.includes("website") || text.includes("idea") || text.includes("build")) {
+    return "Try this plan:\n\n1. Describe the problem your website solves in one sentence.\n2. Name the people who would use it.\n3. Start with a homepage, one core feature, and a contact method.\n4. Test it with two or three people.\n5. Improve it based on what they find confusing.\n\nTell me who the website is for, and I can help narrow the feature list.";
+  }
+  return "Let's break your idea into small steps. Describe who it is for and the main problem it should solve. Then we can outline the first page, the core feature, and how to test it.\n\nNote: this is a local demo response. A live AI model is not connected yet.";
+}
+
+chatForm.addEventListener("submit", event => {
+  event.preventDefault();
+  const message = chatInput.value.trim();
+  if (!message) return;
+  addChatMessage(message, "user");
+  chatInput.value = "";
+  addChatMessage(makeLocalReply(message), "assistant");
+  chatInput.focus();
+});
+
+document.querySelectorAll("[data-prompt]").forEach(button => {
+  button.addEventListener("click", () => {
+    chatInput.value = button.dataset.prompt || "";
+    chatInput.focus();
+  });
+});
