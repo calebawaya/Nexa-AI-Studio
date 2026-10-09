@@ -72,6 +72,15 @@
         <p class="builder-copy">Reopen a project saved in this browser.</p>
         <label class="sr-only" for="savedWorkspaceSearch">Search saved workspaces</label>
         <input id="savedWorkspaceSearch" class="saved-workspace-search" type="search" placeholder="Search by project, idea, or status..." autocomplete="off">
+        <label class="sr-only" for="savedWorkspaceStatusFilter">Filter saved workspaces by status</label>
+        <select id="savedWorkspaceStatusFilter" class="saved-workspace-status-filter">
+          <option value="all">All statuses</option>
+          <option value="planning">Planning</option>
+          <option value="building">Building</option>
+          <option value="testing">Testing</option>
+          <option value="ready">Ready</option>
+        </select>
+        <p id="savedWorkspaceCount" class="saved-workspace-count" aria-live="polite">Your saved workspaces</p>
         <div id="savedWorkspacesList" class="saved-workspaces-list"><p class="saved-workspaces-empty">Your saved workspaces will appear here.</p></div>
       </div>
       <div id="workspaceCard" class="workspace-card" hidden>
