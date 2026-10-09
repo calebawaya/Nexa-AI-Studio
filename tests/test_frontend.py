@@ -43,7 +43,8 @@ class FrontendIntegrityTests(unittest.TestCase):
             "exportIdeasButton", "chatForm", "chatInput",
             "checkBackendButton", "clearChatButton", "chatCounter",
             "connectionStatus", "chatMessages", "customTaskForm",
-            "customTaskInput", "exportWorkspaceButton", "workspaceName",
+            "customTaskInput", "exportWorkspaceButton", "importWorkspaceButton",
+            "importWorkspaceInput", "workspaceName",
             "workspaceStatus", "workspaceNotes",
         ]
         for element_id in required:
@@ -87,6 +88,9 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn('activeWorkspace.tasks.push({ text, done: false })', script)
         self.assertIn('nexa-workspace-${safeName}.json', script)
         self.assertIn('JSON.stringify(backup, null, 2)', script)
+        self.assertIn('importWorkspaceInput.addEventListener("change"', script)
+        self.assertIn('backup?.app !== "Nexa AI Studio"', script)
+        self.assertIn('Workspace backup imported successfully.', script)
 
 
 if __name__ == "__main__":
