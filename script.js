@@ -242,7 +242,7 @@ async function getAssistantReply(message) {
           connectionStatus.textContent = "Backend is online, but live AI is not configured. Showing a local demo reply for now.";
           connectionStatus.dataset.state = "warning";
         }
-        return makeLocalReply(message) + "\\n\\nLive AI is not configured yet, so this reply comes from Nexa's local demo.";
+        return makeLocalReply(message) + "\n\nLive AI is not configured yet, so this reply comes from Nexa's local demo.";
       }
 
       return `I could not reach the live AI backend: ${error.message}. Check that the backend is deployed and API_BASE_URL is correct.`;
