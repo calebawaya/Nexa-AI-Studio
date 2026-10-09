@@ -196,3 +196,18 @@ body.alternate-glow { --accent: #a78bfa; --accent-2: #fb7185; --glow: rgba(167, 
 .connection-status[data-state="success"] { color: #8be9b4; }
 .connection-status[data-state="warning"] { color: #ffd479; }
 .connection-status[data-state="error"] { color: #ff9eab; }
+
+
+/* Step batch: persistence, export controls, and chat accessibility */
+.idea-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.idea-actions .clear-button { margin-top: 16px; }
+.connection-button[disabled], .chat-form button[disabled] { opacity: .6; cursor: wait; }
+.chat-counter { margin: -6px 20px 14px; color: var(--muted); font-size: .78rem; text-align: right; }
+.chat-counter.near-limit { color: #ffd479; }
+.chat-counter.at-limit { color: #ff9eab; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 560px) {
+  .idea-actions { align-items: stretch; }
+  .idea-actions .clear-button { flex: 1; }
+  .chat-counter { margin-right: 14px; margin-left: 14px; }
+}
