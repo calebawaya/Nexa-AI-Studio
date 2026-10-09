@@ -66,13 +66,29 @@
     <section id="workspace" class="builder section workspace-section">
       <p class="eyebrow">PROJECT WORKSPACE</p>
       <h2 id="workspaceTitle">Turn your plan into progress.</h2>
-      <p class="builder-copy">Track the most important steps for your project directly in this browser. Your checklist is saved locally.</p>
+      <p class="builder-copy">Track the most important steps for your project directly in this browser. Your workspace is saved locally.</p>
       <div id="workspaceCard" class="workspace-card" hidden>
         <div class="workspace-header">
-          <div><p class="muted">CURRENT PROJECT</p><h3 id="workspaceIdea">Your project</h3></div>
+          <div class="workspace-project-details">
+            <p class="muted">CURRENT PROJECT</p>
+            <label class="workspace-label" for="workspaceName">Project name</label>
+            <input id="workspaceName" class="workspace-input" type="text" maxlength="80" placeholder="Name your project">
+            <h3 id="workspaceIdea">Your project</h3>
+          </div>
           <div class="workspace-progress"><strong id="workspaceProgress">0/5 tasks complete · 0%</strong><progress id="workspaceProgressBar" max="100" value="0">0%</progress></div>
         </div>
+        <div class="workspace-meta">
+          <label for="workspaceStatus">Status</label>
+          <select id="workspaceStatus">
+            <option value="planning">Planning</option>
+            <option value="building">Building</option>
+            <option value="testing">Testing</option>
+            <option value="ready">Ready</option>
+          </select>
+        </div>
         <div id="workspaceTasks" class="workspace-tasks"></div>
+        <label class="workspace-notes-label" for="workspaceNotes">Project notes</label>
+        <textarea id="workspaceNotes" class="workspace-notes" rows="5" maxlength="2000" placeholder="Write decisions, questions, features, or reminders for this project..."></textarea>
         <details class="workspace-plan"><summary>View generated plan</summary><pre id="workspacePlanPreview"></pre></details>
       </div>
     </section>
