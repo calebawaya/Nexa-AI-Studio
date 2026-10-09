@@ -108,7 +108,56 @@ if (exportIdeasButton) {
   });
 }
 
-ideaForm.addEventListener("submit", event => {
+function makeLocalIdeaPlan(idea) {
+  return `Your starter plan for: “${idea}”\n\n` +
+    `1. Problem: Write the main problem this project solves.\n` +
+    `2. Audience: Describe the people who would use it.\n` +
+    `3. First version: Choose three essential features, not every possible feature.\n` +
+    `4. Validation: Show a simple demo to a few potential users and collect feedback.\n` +
+    `5. Next steps: Improve the most important issue, estimate costs, and decide how to sustain the project.\n\n` +
+    `Local starter plan — live AI was unavailable for this request.`;
+}
+
+async function generateIdeaPlan(idea) {
+  const base = API_BASE_URL.trim().replace(/\/$/, "");
+  if (!base) return makeLocalIdeaPlan(idea);
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    let response;
+    try {
+      response = await fetch(`${base}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Create a practical starter plan for this project idea: "${idea}". Use clear headings for the problem, target users, core features for a first version, steps to build and test it, likely costs or resources, and a realistic way to sustain it. Keep the advice beginner-friendly and specific. If the idea is unclear, state your assumptions.`
+        }),
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+    if (typeof data.reply !== "string" || !data.reply.trim()) {
+      throw new Error("The AI returned an empty plan.");
+    }
+    if (chatMode) chatMode.textContent = "Live AI backend connected";
+    return `AI-generated plan for: “${idea}”\n\n${data.reply.trim()}`;
+  } catch (error) {
+    if (connectionStatus) {
+      connectionStatus.textContent = error.name === "AbortError"
+        ? "The idea planner timed out. Showing a local starter plan instead."
+        : "Live AI is unavailable for the idea planner. Showing a local starter plan instead.";
+      connectionStatus.dataset.state = "warning";
+    }
+    return makeLocalIdeaPlan(idea);
+  }
+}
+
+ideaForm.addEventListener("submit", async event => {
   event.preventDefault();
   const idea = ideaInput.value.trim();
 
@@ -125,16 +174,24 @@ ideaForm.addEventListener("submit", event => {
     if (!saveIdeas(ideas)) return;
   }
 
-  result.textContent =
-    `Your starter plan for: “${idea}”\n\n` +
-    `1. Define the main problem your project will solve.\n` +
-    `2. Identify who will use it and what they need.\n` +
-    `3. Sketch a simple first version with only essential features.\n` +
-    `4. Build and test the first version with real users.\n` +
-    `5. Improve it using feedback and decide how it could be sustained.\n\n` +
-    `This is a starter plan, not a live AI response. An AI backend can be connected in a later step.`;
+  const submitButton = ideaForm.querySelector('button[type="submit"]');
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Creating plan...";
+  }
+  result.textContent = "Nexa is preparing your project plan...";
+  result.setAttribute("aria-busy", "true");
 
-  renderIdeas();
+  try {
+    result.textContent = await generateIdeaPlan(idea);
+  } finally {
+    result.setAttribute("aria-busy", "false");
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Build my plan";
+    }
+    renderIdeas();
+  }
 });
 
 clearButton.addEventListener("click", () => {
