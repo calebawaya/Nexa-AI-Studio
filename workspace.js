@@ -40,6 +40,7 @@ function readWorkspace(idea) {
         name: typeof stored.name === "string" ? stored.name : idea,
         status: ["planning", "building", "testing", "ready"].includes(stored.status) ? stored.status : "planning",
         notes: typeof stored.notes === "string" ? stored.notes : "",
+        plan: typeof stored.plan === "string" ? stored.plan.slice(0, 20000) : "",
         tasks: stored.tasks.map(task => ({ text: String(task.text || ""), done: Boolean(task.done) })).filter(task => task.text).slice(0, 100)
       };
     }
@@ -49,6 +50,7 @@ function readWorkspace(idea) {
     name: idea,
     status: "planning",
     notes: "",
+    plan: "",
     tasks: defaultTasks.map(text => ({ text, done: false }))
   };
 }
@@ -97,8 +99,8 @@ function listSavedWorkspaces() {
     open.textContent = "Open";
     open.addEventListener("click", () => {
       const workspace = readWorkspace(entry.idea);
-      renderWorkspace(workspace, "");
-      showWorkspaceNotice("Saved workspace opened. Import its JSON backup if you also need the generated plan.");
+      renderWorkspace(workspace, workspace.plan || "");
+      showWorkspaceNotice("Saved workspace opened.");
       document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     row.append(details, open);
@@ -128,10 +130,11 @@ function downloadTextFile(filename, contents, mimeType = "text/plain;charset=utf
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function renderWorkspace(workspace, plan = activePlan) {
+function renderWorkspace(workspace, plan = workspace.plan || activePlan) {
   if (!workspaceCard || !workspaceTasks) return;
   activeWorkspace = workspace;
-  activePlan = plan || "";
+  activePlan = typeof plan === "string" ? plan : "";
+  workspace.plan = activePlan;
   workspaceCard.hidden = false;
   workspaceIdea.textContent = workspace.idea;
   workspaceTitle.textContent = "Project Workspace";
@@ -306,9 +309,10 @@ if (importWorkspaceButton && importWorkspaceInput) {
         name: typeof project.name === "string" && project.name.trim() ? project.name.trim().slice(0, 80) : project.idea.trim(),
         status: ["planning", "building", "testing", "ready"].includes(project.status) ? project.status : "planning",
         notes: typeof project.notes === "string" ? project.notes.slice(0, 2000) : "",
+        plan: typeof backup.plan === "string" ? backup.plan.slice(0, 20000) : "",
         tasks: project.tasks.map(task => ({ text: task.text.trim().slice(0, 120), done: task.done })).filter(task => task.text)
       };
-      const plan = typeof backup.plan === "string" ? backup.plan.slice(0, 20000) : "";
+      const plan = restored.plan;
       if (!saveWorkspace(restored)) {
         showWorkspaceNotice("Could not save the imported workspace in this browser. Check available storage and try again.");
         return;
