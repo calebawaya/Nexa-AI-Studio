@@ -10,14 +10,8 @@ const chatMode = document.getElementById("chatMode");
 const exportIdeasButton = document.getElementById("exportIdeasButton");
 const clearChatButton = document.getElementById("clearChatButton");
 const chatCounter = document.getElementById("chatCounter");
-const exportIdeasButton = document.getElementById("exportIdeasButton");
-const clearChatButton = document.getElementById("clearChatButton");
-const chatCounter = document.getElementById("chatCounter");
 
 const STORAGE_KEY = "nexaAiStudioIdeas";
-const THEME_KEY = "nexaAiStudioTheme";
-const CHAT_KEY = "nexaAiStudioChat";
-const MAX_CHAT_MESSAGES = 50;
 const THEME_KEY = "nexaAiStudioTheme";
 const CHAT_KEY = "nexaAiStudioChat";
 const MAX_CHAT_MESSAGES = 50;
@@ -57,7 +51,6 @@ function renderIdeas() {
   const ideas = readIdeas();
   savedIdeas.replaceChildren();
   clearButton.hidden = ideas.length === 0;
-  if (exportIdeasButton) exportIdeasButton.hidden = ideas.length === 0;
   if (exportIdeasButton) exportIdeasButton.hidden = ideas.length === 0;
 
   ideas.forEach((idea, index) => {
@@ -103,7 +96,7 @@ if (exportIdeasButton) {
   exportIdeasButton.addEventListener("click", () => {
     const ideas = readIdeas();
     if (!ideas.length) return;
-    const contents = "Nexa AI Studio — Saved Ideas\\n\\n" + ideas.map((idea, index) => `${index + 1}. ${idea}`).join("\\n");
+    const contents = "Nexa AI Studio — Saved Ideas\n\n" + ideas.map((idea, index) => `${index + 1}. ${idea}`).join("\n");
     const blob = new Blob([contents], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
