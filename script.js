@@ -175,6 +175,7 @@ ideaForm.addEventListener("submit", async event => {
   }
 
   const submitButton = ideaForm.querySelector('button[type="submit"]');
+  const originalSubmitText = submitButton ? submitButton.textContent : "";
   if (submitButton) {
     submitButton.disabled = true;
     submitButton.textContent = "Creating plan...";
@@ -188,7 +189,7 @@ ideaForm.addEventListener("submit", async event => {
     result.setAttribute("aria-busy", "false");
     if (submitButton) {
       submitButton.disabled = false;
-      submitButton.textContent = "Build my plan";
+      submitButton.textContent = originalSubmitText;
     }
     renderIdeas();
   }
