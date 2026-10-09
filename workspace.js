@@ -8,6 +8,9 @@ const workspaceIdea = document.getElementById("workspaceIdea");
 const workspaceName = document.getElementById("workspaceName");
 const workspaceStatus = document.getElementById("workspaceStatus");
 const workspaceNotes = document.getElementById("workspaceNotes");
+const customTaskForm = document.getElementById("customTaskForm");
+const customTaskInput = document.getElementById("customTaskInput");
+const exportWorkspaceButton = document.getElementById("exportWorkspaceButton");
 const workspaceKey = "nexaAiStudioWorkspace";
 
 const defaultTasks = [
@@ -17,6 +20,9 @@ const defaultTasks = [
   "Test the prototype with a few users",
   "Improve the biggest issue and prepare the next release"
 ];
+
+let activeWorkspace = null;
+let activePlan = "";
 
 function workspaceStorageKey(idea) {
   return `${workspaceKey}:${idea}`;
@@ -31,7 +37,7 @@ function readWorkspace(idea) {
         name: typeof stored.name === "string" ? stored.name : idea,
         status: ["planning", "building", "testing", "ready"].includes(stored.status) ? stored.status : "planning",
         notes: typeof stored.notes === "string" ? stored.notes : "",
-        tasks: stored.tasks.map(task => ({ text: String(task.text || ""), done: Boolean(task.done) })).filter(task => task.text)
+        tasks: stored.tasks.map(task => ({ text: String(task.text || ""), done: Boolean(task.done) })).filter(task => task.text).slice(0, 100)
       };
     }
   } catch { /* Use a fresh workspace when storage is unavailable. */ }
@@ -47,34 +53,66 @@ function readWorkspace(idea) {
 function saveWorkspace(workspace) {
   try {
     localStorage.setItem(workspaceStorageKey(workspace.idea), JSON.stringify(workspace));
-  } catch { /* Workspace still works for this page view. */ }
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-function renderWorkspace(workspace, plan) {
+function downloadTextFile(filename, contents, mimeType = "text/plain;charset=utf-8") {
+  const blob = new Blob([contents], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function renderWorkspace(workspace, plan = activePlan) {
   if (!workspaceCard || !workspaceTasks) return;
+  activeWorkspace = workspace;
+  activePlan = plan || "";
   workspaceCard.hidden = false;
   workspaceIdea.textContent = workspace.idea;
   workspaceTitle.textContent = "Project Workspace";
-  if (workspaceName) workspaceName.value = workspace.name || workspace.idea;
+  if (workspaceName && document.activeElement !== workspaceName) workspaceName.value = workspace.name || workspace.idea;
   if (workspaceStatus) workspaceStatus.value = workspace.status || "planning";
-  if (workspaceNotes) workspaceNotes.value = workspace.notes || "";
+  if (workspaceNotes && document.activeElement !== workspaceNotes) workspaceNotes.value = workspace.notes || "";
   workspaceTasks.replaceChildren();
 
   workspace.tasks.forEach((task, index) => {
-    const row = document.createElement("label");
+    const row = document.createElement("div");
     row.className = "workspace-task";
+
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = Boolean(task.done);
+    checkbox.setAttribute("aria-label", `Mark task complete: ${task.text}`);
     checkbox.addEventListener("change", () => {
       workspace.tasks[index].done = checkbox.checked;
-      saveWorkspace(workspace);
-      renderWorkspace(workspace, plan);
+      if (!saveWorkspace(workspace)) showWorkspaceNotice("Browser storage is full. Export your workspace to keep a backup.");
+      renderWorkspace(workspace, activePlan);
     });
+
     const text = document.createElement("span");
+    text.className = task.done ? "workspace-task-done" : "";
     text.textContent = task.text;
-    if (task.done) text.className = "workspace-task-done";
-    row.append(checkbox, text);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "workspace-remove-task";
+    remove.textContent = "Remove";
+    remove.setAttribute("aria-label", `Remove task: ${task.text}`);
+    remove.addEventListener("click", () => {
+      workspace.tasks.splice(index, 1);
+      saveWorkspace(workspace);
+      renderWorkspace(workspace, activePlan);
+    });
+
+    row.append(checkbox, text, remove);
     workspaceTasks.append(row);
   });
 
@@ -82,7 +120,20 @@ function renderWorkspace(workspace, plan) {
   const percent = workspace.tasks.length ? Math.round((completed / workspace.tasks.length) * 100) : 0;
   workspaceProgress.textContent = `${completed}/${workspace.tasks.length} tasks complete · ${percent}%`;
   workspaceProgressBar.value = percent;
-  workspacePlanPreview.textContent = plan || "Generate a project plan to see it here.";
+  workspaceProgressBar.setAttribute("aria-label", `${percent}% of project tasks completed`);
+  workspacePlanPreview.textContent = activePlan || "Generate a project plan to see it here.";
+}
+
+function showWorkspaceNotice(message) {
+  let notice = document.getElementById("workspaceNotice");
+  if (!notice) {
+    notice = document.createElement("p");
+    notice.id = "workspaceNotice";
+    notice.className = "workspace-notice";
+    notice.setAttribute("role", "status");
+    workspaceCard?.prepend(notice);
+  }
+  notice.textContent = message;
 }
 
 function createWorkspaceFromPlan() {
@@ -90,11 +141,14 @@ function createWorkspaceFromPlan() {
   const result = document.getElementById("result");
   const idea = ideaInput?.value.trim();
   const plan = result?.textContent.trim();
-  if (!idea || !plan || plan === "Your next project begins with an idea." || plan.includes("preparing your project plan")) return;
+  if (!idea || !plan || plan === "Your next project begins with an idea." || plan.includes("preparing your project plan")) {
+    showWorkspaceNotice("Enter an idea and generate a plan before opening its workspace.");
+    return;
+  }
 
   const workspace = readWorkspace(idea);
-  saveWorkspace(workspace);
   renderWorkspace(workspace, plan);
+  if (!saveWorkspace(workspace)) showWorkspaceNotice("Workspace opened, but your browser could not save it. Export a backup.");
   document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -103,31 +157,58 @@ if (createWorkspaceButton) createWorkspaceButton.addEventListener("click", creat
 
 if (workspaceName) {
   workspaceName.addEventListener("input", () => {
-    const idea = document.getElementById("ideaInput")?.value.trim();
-    if (!idea) return;
-    const workspace = readWorkspace(idea);
-    workspace.name = workspaceName.value.trim() || idea;
-    saveWorkspace(workspace);
+    if (!activeWorkspace) return;
+    activeWorkspace.name = workspaceName.value.trim() || activeWorkspace.idea;
+    saveWorkspace(activeWorkspace);
   });
 }
 
 if (workspaceStatus) {
   workspaceStatus.addEventListener("change", () => {
-    const idea = document.getElementById("ideaInput")?.value.trim();
-    if (!idea) return;
-    const workspace = readWorkspace(idea);
-    workspace.status = workspaceStatus.value;
-    saveWorkspace(workspace);
+    if (!activeWorkspace) return;
+    activeWorkspace.status = workspaceStatus.value;
+    saveWorkspace(activeWorkspace);
   });
 }
 
 if (workspaceNotes) {
   workspaceNotes.addEventListener("input", () => {
-    const idea = document.getElementById("ideaInput")?.value.trim();
-    if (!idea) return;
-    const workspace = readWorkspace(idea);
-    workspace.notes = workspaceNotes.value;
-    saveWorkspace(workspace);
+    if (!activeWorkspace) return;
+    activeWorkspace.notes = workspaceNotes.value;
+    saveWorkspace(activeWorkspace);
+  });
+}
+
+if (customTaskForm && customTaskInput) {
+  customTaskForm.addEventListener("submit", event => {
+    event.preventDefault();
+    if (!activeWorkspace) return;
+    const text = customTaskInput.value.trim();
+    if (!text) return;
+    if (activeWorkspace.tasks.length >= 100) {
+      showWorkspaceNotice("This workspace has reached the 100-task limit.");
+      return;
+    }
+    activeWorkspace.tasks.push({ text, done: false });
+    if (!saveWorkspace(activeWorkspace)) showWorkspaceNotice("Task added for this session, but browser storage could not save it.");
+    renderWorkspace(activeWorkspace, activePlan);
+    customTaskInput.value = "";
+    customTaskInput.focus();
+  });
+}
+
+if (exportWorkspaceButton) {
+  exportWorkspaceButton.addEventListener("click", () => {
+    if (!activeWorkspace) return;
+    const backup = {
+      app: "Nexa AI Studio",
+      exportedAt: new Date().toISOString(),
+      project: activeWorkspace,
+      plan: activePlan
+    };
+    const safeName = (activeWorkspace.name || "project").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "project";
+    downloadTextFile(`nexa-workspace-${safeName}.json`, JSON.stringify(backup, null, 2), "application/json;charset=utf-8");
+    showWorkspaceNotice("Workspace backup exported as JSON.");
   });
 }
 
@@ -140,6 +221,6 @@ if (ideaForm && result) {
       if (!idea || result.textContent.includes("preparing your project plan")) return;
       const workspace = readWorkspace(idea);
       renderWorkspace(workspace, result.textContent.trim());
-    }, 50);
+    }, 100);
   });
 }
