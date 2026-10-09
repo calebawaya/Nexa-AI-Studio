@@ -39,3 +39,6 @@
   .workspace-task { grid-template-columns: 20px minmax(0, 1fr); }
   .workspace-remove-task { grid-column: 2; justify-self: start; }
 }
+
+.workspace-actions { flex-wrap: wrap; gap: 10px; }
+.workspace-actions .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
