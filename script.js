@@ -6,6 +6,9 @@ const savedIdeas = document.getElementById("savedIdeas");
 const clearButton = document.getElementById("clearButton");
 
 const STORAGE_KEY = "nexaAiStudioIdeas";
+// After deploying the Flask backend, replace the empty string with its HTTPS base URL.
+// Example: https://nexa-ai-studio-api.onrender.com
+const API_BASE_URL = "";
 
 function readIdeas() {
   try {
@@ -115,6 +118,25 @@ function addChatMessage(message, role) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+async function getAssistantReply(message) {
+  if (API_BASE_URL.trim()) {
+    try {
+      const response = await fetch(`${API_BASE_URL.replace(/\\/$/, "")}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+      if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("The AI returned an empty reply.");
+      return data.reply.trim();
+    } catch (error) {
+      return `I could not reach the live AI backend: ${error.message}. Check that the backend is deployed and API_BASE_URL is correct.`;
+    }
+  }
+  return makeLocalReply(message);
+}
+
 function makeLocalReply(message) {
   const text = message.toLowerCase();
   if (text.includes("business") || text.includes("earn") || text.includes("paying") || text.includes("money")) {
@@ -135,8 +157,21 @@ chatForm.addEventListener("submit", event => {
   if (!message) return;
   addChatMessage(message, "user");
   chatInput.value = "";
-  addChatMessage(makeLocalReply(message), "assistant");
-  chatInput.focus();
+  const pending = document.createElement("div");
+  pending.className = "chat-message assistant-message";
+  pending.textContent = API_BASE_URL.trim() ? "Thinking..." : "Preparing a local demo response...";
+  chatMessages.append(pending);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatInput.disabled = true;
+  chatForm.querySelector("button[type=submit]").disabled = true;
+  getAssistantReply(message).then(reply => { pending.textContent = reply; }).catch(() => {
+    pending.textContent = "Something went wrong. Please try again.";
+  }).finally(() => {
+    chatInput.disabled = false;
+    chatForm.querySelector("button[type=submit]").disabled = false;
+    chatInput.focus();
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
 });
 
 document.querySelectorAll("[data-prompt]").forEach(button => {
