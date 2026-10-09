@@ -44,7 +44,8 @@ class FrontendIntegrityTests(unittest.TestCase):
             "checkBackendButton", "clearChatButton", "chatCounter",
             "connectionStatus", "chatMessages", "customTaskForm",
             "customTaskInput", "exportWorkspaceButton", "importWorkspaceButton",
-            "importWorkspaceInput", "savedWorkspacesPanel", "savedWorkspacesList", "savedWorkspaceSearch", "workspaceName",
+            "importWorkspaceInput", "savedWorkspacesPanel", "savedWorkspacesList", "savedWorkspaceSearch",
+            "savedWorkspaceStatusFilter", "savedWorkspaceCount", "workspaceName",
             "workspaceStatus", "workspaceNotes",
         ]
         for element_id in required:
@@ -115,6 +116,9 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn("return bTime - aTime || a.name.localeCompare(b.name);", script)
         self.assertIn('`Updated: ${new Date(updatedTime).toLocaleString()}`', script)
         self.assertIn('workspace.updatedAt = new Date().toISOString();', script)
+        self.assertIn('savedWorkspaceStatusFilter.addEventListener("change", listSavedWorkspaces)', script)
+        self.assertIn('(selectedStatus === "all" || entry.status === selectedStatus)', script)
+        self.assertIn("Showing ${visibleEntries.length} of ${entries.length} saved workspace", script)
 
     def test_generated_plan_is_persisted_and_restored_with_workspace(self):
         script = (ROOT / "workspace.js").read_text(encoding="utf-8")
