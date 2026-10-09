@@ -55,16 +55,15 @@ class NexaApiTests(unittest.TestCase):
         response = self.client.post("/api/chat", data="{bad json", content_type="application/json")
         self.assertEqual(response.status_code, 400)
 
-    def test_chat_rejects_non_object_json(self):
+    def test_chat_rejects_non_string_message(self):
         backend.client = FakeClient()
-        response = self.client.post("/api/chat", json=["not", "an", "object"])
+        response = self.client.post("/api/chat", json={"message": 123})
         self.assertEqual(response.status_code, 400)
-        self.assertIn("JSON object", response.get_json()["error"])
 
-    def test_chat_rejects_malformed_json(self):
-        backend.client = FakeClient()
-        response = self.client.post("/api/chat", data="{bad json", content_type="application/json")
-        self.assertEqual(response.status_code, 400)
+    def test_api_adds_security_headers(self):
+        response = self.client.get("/api/health")
+        self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertEqual(response.headers.get("X-Frame-Options"), "DENY")
 
     def test_chat_rejects_empty_message(self):
         backend.client = FakeClient()
