@@ -8,7 +8,16 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
-CORS(app, resources={r"/api/*": {"origins": os.getenv("CORS_ORIGINS", "*").split(",")}})
+def configured_origins():
+    raw_origins = os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5500,http://127.0.0.1:5500,https://calebawaya.github.io"
+    )
+    origins = [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
+    return origins or ["https://calebawaya.github.io"]
+
+
+CORS(app, resources={r"/api/*": {"origins": configured_origins()}})
 
 MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 API_KEY = os.getenv("OPENAI_API_KEY")
@@ -44,7 +53,9 @@ def chat():
             "error": "AI backend is not configured yet. Add OPENAI_API_KEY in the hosting service environment variables."
         }), 503
 
-    payload = request.get_json(silent=True) or {}
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "Send a JSON object containing a message."}), 400
     message = payload.get("message", "")
     if not isinstance(message, str) or not message.strip():
         return jsonify({"error": "Please provide a message."}), 400
