@@ -25,6 +25,7 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=API_KEY, timeout=25.0, max_retries=1) if API_KEY else None
 
+
 @app.after_request
 def add_security_headers(response):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
@@ -47,6 +48,7 @@ SYSTEM_PROMPT = (
     "Do not claim to have changed files, deployed code, or performed actions unless you actually did."
 )
 
+
 @app.get("/")
 def home():
     return jsonify({
@@ -54,6 +56,7 @@ def home():
         "status": "ok",
         "endpoints": ["/api/health", "/api/chat"]
     })
+
 
 @app.get("/api/health")
 def health():
@@ -63,22 +66,27 @@ def health():
         "model": MODEL if client else None
     })
 
+
 @app.post("/api/chat")
 def chat():
-    if not client:
-        return jsonify({
-            "error": "AI backend is not configured yet. Add OPENAI_API_KEY in the hosting service environment variables."
-        }), 503
-
+    # Parse and validate the request before checking AI configuration.
+    # This ensures oversized requests consistently receive the intended 413
+    # response instead of an unrelated 503 when the API key is not configured.
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
         return jsonify({"error": "Send a JSON object containing a message."}), 400
+
     message = payload.get("message", "")
     if not isinstance(message, str) or not message.strip():
         return jsonify({"error": "Please provide a message."}), 400
     message = message.strip()
     if len(message) > 2000:
         return jsonify({"error": "Message is too long. Please keep it under 2,000 characters."}), 400
+
+    if not client:
+        return jsonify({
+            "error": "AI backend is not configured yet. Add OPENAI_API_KEY in the hosting service environment variables."
+        }), 503
 
     try:
         response = client.responses.create(
@@ -94,6 +102,7 @@ def chat():
     except Exception:
         app.logger.exception("AI chat request failed")
         return jsonify({"error": "The AI service could not complete the request. Check the backend logs and configuration."}), 502
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5000"))
