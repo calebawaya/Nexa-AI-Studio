@@ -4,6 +4,9 @@ const ideaInput = document.getElementById("ideaInput");
 const result = document.getElementById("result");
 const savedIdeas = document.getElementById("savedIdeas");
 const clearButton = document.getElementById("clearButton");
+const checkBackendButton = document.getElementById("checkBackendButton");
+const connectionStatus = document.getElementById("connectionStatus");
+const chatMode = document.getElementById("chatMode");
 
 const STORAGE_KEY = "nexaAiStudioIdeas";
 // After deploying the Flask backend, replace the empty string with its HTTPS base URL.
@@ -180,3 +183,37 @@ document.querySelectorAll("[data-prompt]").forEach(button => {
     chatInput.focus();
   });
 });
+
+if (checkBackendButton && connectionStatus) {
+  checkBackendButton.addEventListener("click", async () => {
+    if (!API_BASE_URL.trim()) {
+      connectionStatus.textContent = "Backend not connected: deploy the Flask API, then set API_BASE_URL near the top of script.js.";
+      connectionStatus.dataset.state = "warning";
+      return;
+    }
+
+    checkBackendButton.disabled = true;
+    checkBackendButton.textContent = "Checking...";
+    connectionStatus.textContent = "Checking the backend health endpoint...";
+    connectionStatus.dataset.state = "checking";
+    try {
+      const base = API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+      const response = await fetch(`${base}/api/health`, { method: "GET" });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.status !== "ok") {
+        throw new Error(data.error || `Health check failed (${response.status})`);
+      }
+      connectionStatus.textContent = data.ai_configured
+        ? `Backend is online. AI is configured with model: ${data.model || "configured model"}.`
+        : "Backend is online, but OPENAI_API_KEY is not configured in the hosting service.";
+      connectionStatus.dataset.state = data.ai_configured ? "success" : "warning";
+      chatMode.textContent = data.ai_configured ? "Live AI backend connected" : "Backend online · AI setup needed";
+    } catch (error) {
+      connectionStatus.textContent = `Could not reach the backend: ${error.message}. Check the service URL and CORS_ORIGINS.`;
+      connectionStatus.dataset.state = "error";
+    } finally {
+      checkBackendButton.disabled = false;
+      checkBackendButton.textContent = "Check connection";
+    }
+  });
+}
