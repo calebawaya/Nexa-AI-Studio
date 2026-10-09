@@ -86,7 +86,17 @@
             <option value="ready">Ready</option>
           </select>
         </div>
+        <form id="customTaskForm" class="workspace-add-task">
+          <label class="workspace-notes-label" for="customTaskInput">Add your own task</label>
+          <div class="workspace-task-entry">
+            <input id="customTaskInput" type="text" maxlength="120" placeholder="E.g. Create the homepage" required>
+            <button class="primary-button" type="submit">Add task +</button>
+          </div>
+        </form>
         <div id="workspaceTasks" class="workspace-tasks"></div>
+        <div class="workspace-actions">
+          <button id="exportWorkspaceButton" class="clear-button" type="button">Export workspace</button>
+        </div>
         <label class="workspace-notes-label" for="workspaceNotes">Project notes</label>
         <textarea id="workspaceNotes" class="workspace-notes" rows="5" maxlength="2000" placeholder="Write decisions, questions, features, or reminders for this project..."></textarea>
         <details class="workspace-plan"><summary>View generated plan</summary><pre id="workspacePlanPreview"></pre></details>
