@@ -22,3 +22,20 @@
 .workspace-plan summary { cursor: pointer; font-weight: 700; }
 .workspace-plan pre { white-space: pre-wrap; font: inherit; color: var(--muted); line-height: 1.6; margin: 14px 0 0; max-height: 320px; overflow: auto; }
 @media (max-width: 700px) { .workspace-header { flex-direction: column; } .workspace-progress { width: 100%; text-align: left; } .workspace-meta { align-items: flex-start; flex-direction: column; } .workspace-meta select { width: 100%; } }
+
+.workspace-add-task { margin: 18px 0; }
+.workspace-task-entry { display: flex; gap: 10px; margin-top: 8px; }
+.workspace-task-entry input { flex: 1; min-width: 0; border: 1px solid var(--panel-border); border-radius: 12px; background: var(--background); color: var(--text); padding: 12px 14px; font: inherit; }
+.workspace-task-entry .primary-button { white-space: nowrap; }
+.workspace-task { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; }
+.workspace-task span { overflow-wrap: anywhere; }
+.workspace-remove-task { border: 1px solid var(--panel-border); border-radius: 9px; padding: 6px 9px; background: transparent; color: var(--muted); font: inherit; font-size: .82rem; cursor: pointer; }
+.workspace-remove-task:hover { color: var(--text); border-color: var(--accent); }
+.workspace-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
+.workspace-notice { margin: 0 0 14px; color: var(--muted); font-size: .9rem; }
+@media (max-width: 520px) {
+  .workspace-task-entry { flex-direction: column; }
+  .workspace-task-entry .primary-button { width: 100%; }
+  .workspace-task { grid-template-columns: 20px minmax(0, 1fr); }
+  .workspace-remove-task { grid-column: 2; justify-self: start; }
+}
