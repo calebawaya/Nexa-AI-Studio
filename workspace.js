@@ -116,6 +116,36 @@ function listSavedWorkspaces() {
       showWorkspaceNotice("Saved workspace opened.");
       document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    const duplicate = document.createElement("button");
+    duplicate.type = "button";
+    duplicate.className = "saved-workspace-duplicate";
+    duplicate.textContent = "Duplicate";
+    duplicate.setAttribute("aria-label", `Duplicate saved workspace: ${entry.name}`);
+    duplicate.addEventListener("click", () => {
+      const original = readWorkspace(entry.idea);
+      let copyIdea = `${entry.idea} (copy)`;
+      let copyNumber = 2;
+      while (localStorage.getItem(workspaceStorageKey(copyIdea)) !== null && copyNumber < 1000) {
+        copyIdea = `${entry.idea} (copy ${copyNumber})`;
+        copyNumber += 1;
+      }
+      if (localStorage.getItem(workspaceStorageKey(copyIdea)) !== null) {
+        showWorkspaceNotice("Could not create another copy. Rename or remove an existing copy first.");
+        return;
+      }
+      const copy = {
+        ...original,
+        idea: copyIdea,
+        name: `${entry.name} (copy)`.slice(0, 80),
+        tasks: original.tasks.map(task => ({ ...task }))
+      };
+      if (!saveWorkspace(copy)) {
+        showWorkspaceNotice("Could not duplicate this workspace. Browser storage may be full.");
+        return;
+      }
+      renderWorkspace(copy, copy.plan || "");
+      showWorkspaceNotice("Workspace duplicated. You are now editing the copy.");
+    });
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "saved-workspace-delete";
@@ -135,7 +165,7 @@ function listSavedWorkspaces() {
         showWorkspaceNotice("Could not delete this workspace from browser storage.");
       }
     });
-    row.append(details, open, remove);
+    row.append(details, open, duplicate, remove);
     savedWorkspacesList.append(row);
   });
 }
