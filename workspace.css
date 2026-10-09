@@ -52,3 +52,7 @@
 .saved-workspace-details span { overflow-wrap: anywhere; color: var(--muted); font-size: .9rem; }
 .saved-workspace-details small, .saved-workspaces-empty { color: var(--muted); }
 @media (max-width: 520px) { .saved-workspace-row { align-items: stretch; flex-direction: column; } .saved-workspace-row .clear-button { width: 100%; } }
+
+.saved-workspace-delete { border: 1px solid var(--panel-border); border-radius: 10px; padding: 9px 12px; background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
+.saved-workspace-delete:hover { border-color: var(--accent); color: var(--text); }
+.saved-workspace-row > .clear-button, .saved-workspace-row > .saved-workspace-delete { flex-shrink: 0; }
