@@ -233,6 +233,18 @@ async function getAssistantReply(message) {
       return data.reply.trim();
     } catch (error) {
       if (error.name === "AbortError") return "The AI request took too long. Please try again in a moment.";
+
+      // If the backend is online but has no provider key yet, keep the chat useful
+      // with a clearly labelled local response instead of showing a raw server error.
+      if (error.message.includes("AI backend is not configured yet")) {
+        if (chatMode) chatMode.textContent = "Local demo · AI setup needed";
+        if (connectionStatus) {
+          connectionStatus.textContent = "Backend is online, but live AI is not configured. Showing a local demo reply for now.";
+          connectionStatus.dataset.state = "warning";
+        }
+        return makeLocalReply(message) + "\\n\\nLive AI is not configured yet, so this reply comes from Nexa's local demo.";
+      }
+
       return `I could not reach the live AI backend: ${error.message}. Check that the backend is deployed and API_BASE_URL is correct.`;
     }
   }
