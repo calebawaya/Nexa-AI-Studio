@@ -185,3 +185,14 @@ body.alternate-glow { --accent: #a78bfa; --accent-2: #fb7185; --glow: rgba(167, 
 .quick-prompts button { border: 1px solid var(--panel-border); border-radius: 999px; padding: 8px 12px; color: var(--muted); background: transparent; cursor: pointer; font-size: .8rem; }
 .quick-prompts button:hover { color: var(--text); border-color: var(--accent); }
 @media (max-width: 560px) { .chat-form { flex-direction: column; } .chat-form .primary-button { width: 100%; } .chat-message { max-width: 96%; } }
+
+/* Backend connection diagnostics */
+.chat-heading { flex-wrap: wrap; }
+.chat-title { flex: 1; min-width: 130px; }
+.connection-button { border: 1px solid var(--panel-border); border-radius: 10px; padding: 9px 12px; color: var(--text); background: rgba(85, 216, 255, .08); cursor: pointer; font-size: .8rem; }
+.connection-button:hover { border-color: var(--accent); }
+.connection-button:disabled { opacity: .6; cursor: wait; }
+.connection-status { margin: 0; padding: 10px 20px; border-bottom: 1px solid rgba(143, 165, 230, .13); color: var(--muted); font-size: .84rem; line-height: 1.5; }
+.connection-status[data-state="success"] { color: #8be9b4; }
+.connection-status[data-state="warning"] { color: #ffd479; }
+.connection-status[data-state="error"] { color: #ff9eab; }
