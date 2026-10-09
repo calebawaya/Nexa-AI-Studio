@@ -3,6 +3,7 @@ const savedWorkspacesList = document.getElementById("savedWorkspacesList");
 const savedWorkspaceSearch = document.getElementById("savedWorkspaceSearch");
 const savedWorkspaceStatusFilter = document.getElementById("savedWorkspaceStatusFilter");
 const savedWorkspaceCount = document.getElementById("savedWorkspaceCount");
+const resetSavedWorkspaceFilters = document.getElementById("resetSavedWorkspaceFilters");
 const workspaceTitle = document.getElementById("workspaceTitle");
 const workspaceProgress = document.getElementById("workspaceProgress");
 const workspaceProgressBar = document.getElementById("workspaceProgressBar");
@@ -295,6 +296,14 @@ function createWorkspaceFromPlan() {
 listSavedWorkspaces();
 if (savedWorkspaceSearch) savedWorkspaceSearch.addEventListener("input", listSavedWorkspaces);
 if (savedWorkspaceStatusFilter) savedWorkspaceStatusFilter.addEventListener("change", listSavedWorkspaces);
+if (resetSavedWorkspaceFilters) {
+  resetSavedWorkspaceFilters.addEventListener("click", () => {
+    if (savedWorkspaceSearch) savedWorkspaceSearch.value = "";
+    if (savedWorkspaceStatusFilter) savedWorkspaceStatusFilter.value = "all";
+    listSavedWorkspaces();
+    savedWorkspaceSearch?.focus();
+  });
+}
 
 const createWorkspaceButton = document.getElementById("createWorkspaceButton");
 if (createWorkspaceButton) createWorkspaceButton.addEventListener("click", createWorkspaceFromPlan);
