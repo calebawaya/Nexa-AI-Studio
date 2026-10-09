@@ -73,6 +73,12 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn("ideaInput.value = idea;", script)
         self.assertIn("Saved idea loaded.", script)
 
+    def test_project_plan_can_be_exported(self):
+        script = (ROOT / "script.js").read_text(encoding="utf-8")
+        self.assertIn('document.getElementById("exportPlanButton")', script)
+        self.assertIn('link.download = "nexa-project-plan.txt"', script)
+        self.assertIn("exportPlanButton.hidden = false;", script)
+
 
 if __name__ == "__main__":
     unittest.main()
