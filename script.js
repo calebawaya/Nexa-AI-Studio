@@ -56,8 +56,15 @@ function renderIdeas() {
     const row = document.createElement("div");
     row.className = "saved-idea";
 
-    const text = document.createElement("span");
-    text.textContent = idea;
+    const useIdea = document.createElement("button");
+    useIdea.type = "button";
+    useIdea.className = "load-idea";
+    useIdea.textContent = idea;
+    useIdea.addEventListener("click", () => {
+      ideaInput.value = idea;
+      ideaInput.focus();
+      result.textContent = "Saved idea loaded. Select Build my plan to create a fresh plan.";
+    });
 
     const remove = document.createElement("button");
     remove.type = "button";
@@ -69,7 +76,7 @@ function renderIdeas() {
       if (saveIdeas(updated)) renderIdeas();
     });
 
-    row.append(text, remove);
+    row.append(useIdea, remove);
     savedIdeas.append(row);
   });
 }
