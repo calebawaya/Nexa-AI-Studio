@@ -64,6 +64,7 @@ class NexaApiTests(unittest.TestCase):
         response = self.client.get("/api/health")
         self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
         self.assertEqual(response.headers.get("X-Frame-Options"), "DENY")
+        self.assertEqual(response.headers.get("Cache-Control"), "no-store")
 
     def test_chat_rejects_empty_message(self):
         backend.client = FakeClient()
@@ -74,6 +75,23 @@ class NexaApiTests(unittest.TestCase):
         backend.client = FakeClient()
         response = self.client.post("/api/chat", json={"message": "x" * 2001})
         self.assertEqual(response.status_code, 400)
+
+    def test_oversized_http_body_returns_json_error(self):
+        response = self.client.post(
+            "/api/chat", data=b"x" * (65 * 1024),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 413)
+        self.assertIn("error", response.get_json())
+
+    def test_cors_allows_github_pages_origin(self):
+        response = self.client.get(
+            "/api/health", headers={"Origin": "https://calebawaya.github.io"}
+        )
+        self.assertEqual(
+            response.headers.get("Access-Control-Allow-Origin"),
+            "https://calebawaya.github.io"
+        )
 
     def test_chat_returns_assistant_reply(self):
         backend.client = FakeClient()
