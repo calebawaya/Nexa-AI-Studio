@@ -1,6 +1,8 @@
 const workspaceCard = document.getElementById("workspaceCard");
 const savedWorkspacesList = document.getElementById("savedWorkspacesList");
 const savedWorkspaceSearch = document.getElementById("savedWorkspaceSearch");
+const savedWorkspaceStatusFilter = document.getElementById("savedWorkspaceStatusFilter");
+const savedWorkspaceCount = document.getElementById("savedWorkspaceCount");
 const workspaceTitle = document.getElementById("workspaceTitle");
 const workspaceProgress = document.getElementById("workspaceProgress");
 const workspaceProgressBar = document.getElementById("workspaceProgressBar");
@@ -78,6 +80,7 @@ function listSavedWorkspaces() {
     const bTime = Date.parse(b.updatedAt) || 0;
     return bTime - aTime || a.name.localeCompare(b.name);
   });
+  if (savedWorkspaceCount) savedWorkspaceCount.textContent = `${entries.length} saved workspace${entries.length === 1 ? "" : "s"}`;
   if (!entries.length) {
     const empty = document.createElement("p");
     empty.className = "saved-workspaces-empty";
@@ -87,9 +90,12 @@ function listSavedWorkspaces() {
   }
 
   const query = savedWorkspaceSearch?.value.trim().toLocaleLowerCase() || "";
+  const selectedStatus = savedWorkspaceStatusFilter?.value || "all";
   const visibleEntries = entries.filter(entry =>
-    (entry.name + " " + entry.idea + " " + entry.status).toLocaleLowerCase().includes(query)
+    (entry.name + " " + entry.idea + " " + entry.status).toLocaleLowerCase().includes(query) &&
+    (selectedStatus === "all" || entry.status === selectedStatus)
   );
+  if (savedWorkspaceCount) savedWorkspaceCount.textContent = `Showing ${visibleEntries.length} of ${entries.length} saved workspace${entries.length === 1 ? "" : "s"}`;
   if (!visibleEntries.length) {
     const empty = document.createElement("p");
     empty.className = "saved-workspaces-empty";
@@ -288,6 +294,7 @@ function createWorkspaceFromPlan() {
 
 listSavedWorkspaces();
 if (savedWorkspaceSearch) savedWorkspaceSearch.addEventListener("input", listSavedWorkspaces);
+if (savedWorkspaceStatusFilter) savedWorkspaceStatusFilter.addEventListener("change", listSavedWorkspaces);
 
 const createWorkspaceButton = document.getElementById("createWorkspaceButton");
 if (createWorkspaceButton) createWorkspaceButton.addEventListener("click", createWorkspaceFromPlan);
