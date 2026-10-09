@@ -8,6 +8,8 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
+
+
 def configured_origins():
     raw_origins = os.getenv(
         "CORS_ORIGINS",
@@ -21,7 +23,20 @@ CORS(app, resources={r"/api/*": {"origins": configured_origins()}})
 
 MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=API_KEY) if API_KEY else None
+client = OpenAI(api_key=API_KEY, timeout=25.0, max_retries=1) if API_KEY else None
+
+@app.after_request
+def add_security_headers(response):
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    return response
+
+
+@app.errorhandler(413)
+def request_too_large(_error):
+    return jsonify({"error": "Request is too large. Please send a shorter message."}), 413
+
 
 SYSTEM_PROMPT = (
     "You are Nexa, a helpful beginner-friendly project planning assistant. "
