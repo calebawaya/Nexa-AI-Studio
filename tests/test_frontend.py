@@ -111,6 +111,10 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn('savedWorkspaceSearch.addEventListener("input", listSavedWorkspaces)', script)
         self.assertIn('(entry.name + " " + entry.idea + " " + entry.status).toLocaleLowerCase().includes(query)', script)
         self.assertIn("No saved workspaces match your search.", script)
+        self.assertIn('updatedAt: typeof saved.updatedAt === "string" ? saved.updatedAt : ""', script)
+        self.assertIn("return bTime - aTime || a.name.localeCompare(b.name);", script)
+        self.assertIn('`Updated: ${new Date(updatedTime).toLocaleString()}`', script)
+        self.assertIn('workspace.updatedAt = new Date().toISOString();', script)
 
     def test_generated_plan_is_persisted_and_restored_with_workspace(self):
         script = (ROOT / "workspace.js").read_text(encoding="utf-8")
