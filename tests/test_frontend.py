@@ -100,5 +100,13 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn("renderWorkspace(workspace, \"\" );".replace(" ", ""), script.replace(" ", ""))
 
 
+    def test_generated_plan_is_persisted_and_restored_with_workspace(self):
+        script = (ROOT / "workspace.js").read_text(encoding="utf-8")
+        self.assertIn('plan: typeof stored.plan === "string" ? stored.plan.slice(0, 20000) : ""', script)
+        self.assertIn("workspace.plan = activePlan;", script)
+        self.assertIn('renderWorkspace(workspace, workspace.plan || "")', script)
+        self.assertIn('plan: typeof backup.plan === "string" ? backup.plan.slice(0, 20000) : ""', script)
+
+
 if __name__ == "__main__":
     unittest.main()
