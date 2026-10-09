@@ -37,7 +37,7 @@ After installing dependencies, run:
 python -m unittest discover -s tests -v
 ```
 
-These tests cover the health endpoint, missing API-key handling, malformed and non-object JSON, chat input validation, and a mocked assistant reply. They do not call the paid AI API. The frontend remembers the selected glow and up to 50 recent chat messages in this browser; saved ideas can be exported as a text file.
+These tests cover API health and validation, malformed and non-object JSON, security headers, and a mocked assistant reply without calling the paid AI API. Frontend integrity tests check for duplicate HTML IDs, required controls, and missing local assets. GitHub Actions also checks JavaScript syntax. The frontend remembers the selected glow and up to 50 recent chat messages in this browser; saved ideas can be exported as a text file.
 
 ## Deploy the backend on Render
 
