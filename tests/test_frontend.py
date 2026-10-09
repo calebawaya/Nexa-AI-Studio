@@ -42,7 +42,9 @@ class FrontendIntegrityTests(unittest.TestCase):
             "themeButton", "ideaForm", "ideaInput", "clearButton",
             "exportIdeasButton", "chatForm", "chatInput",
             "checkBackendButton", "clearChatButton", "chatCounter",
-            "connectionStatus", "chatMessages",
+            "connectionStatus", "chatMessages", "customTaskForm",
+            "customTaskInput", "exportWorkspaceButton", "workspaceName",
+            "workspaceStatus", "workspaceNotes",
         ]
         for element_id in required:
             with self.subTest(element_id=element_id):
@@ -78,6 +80,13 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn('document.getElementById("exportPlanButton")', script)
         self.assertIn('link.download = "nexa-project-plan.txt"', script)
         self.assertIn("exportPlanButton.hidden = false;", script)
+
+    def test_workspace_supports_custom_tasks_and_backup_export(self):
+        script = (ROOT / "workspace.js").read_text(encoding="utf-8")
+        self.assertIn('customTaskForm.addEventListener("submit"', script)
+        self.assertIn('workspace.tasks.push({ text, done: false })', script)
+        self.assertIn('nexa-workspace-${safeName}.json', script)
+        self.assertIn('JSON.stringify(backup, null, 2)', script)
 
 
 if __name__ == "__main__":
