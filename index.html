@@ -61,6 +61,27 @@
       <div id="savedIdeas" class="saved-ideas" aria-label="Saved ideas"></div>
     </section>
   </main>
+  <section id="assistant" class="assistant section">
+    <p class="eyebrow">NEXA PROJECT COMPANION</p>
+    <h2>Talk through your next idea.</h2>
+    <p class="builder-copy">Ask for project ideas, a feature checklist, or a beginner-friendly next step. This preview runs in your browser; it is not connected to a live AI service yet.</p>
+    <div class="chat-panel">
+      <div class="chat-heading"><span class="status-dot"></span><div><strong>Nexa Assistant</strong><small>Local demo · no account needed</small></div></div>
+      <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
+        <div class="chat-message assistant-message">Hi! Tell me what you want to build, and I’ll help you plan the first steps.</div>
+      </div>
+      <form id="chatForm" class="chat-form">
+        <label class="sr-only" for="chatInput">Message Nexa Assistant</label>
+        <input id="chatInput" type="text" maxlength="500" placeholder="Ask about your project..." autocomplete="off" required>
+        <button class="primary-button" type="submit">Send ↗</button>
+      </form>
+      <div class="quick-prompts">
+        <button type="button" data-prompt="Give me a simple website idea for a small business.">Business website idea</button>
+        <button type="button" data-prompt="Give me a beginner checklist for building a website.">Beginner checklist</button>
+        <button type="button" data-prompt="How could I make my website useful to paying customers?">Ways to earn</button>
+      </div>
+    </div>
+  </section>
   <footer>© 2026 Nexa AI Studio <span>·</span> Built for big ideas.</footer>
   <script src="script.js"></script>
 </body>
