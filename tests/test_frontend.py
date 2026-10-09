@@ -97,7 +97,7 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn("function listSavedWorkspaces()", script)
         self.assertIn("localStorage.key(index)", script)
         self.assertIn('open.textContent = "Open"', script)
-        self.assertIn("renderWorkspace(workspace, \"\" );".replace(" ", ""), script.replace(" ", ""))
+        self.assertIn('renderWorkspace(workspace, workspace.plan || "")', script)
 
 
     def test_generated_plan_is_persisted_and_restored_with_workspace(self):
