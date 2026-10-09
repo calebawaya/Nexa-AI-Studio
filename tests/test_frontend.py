@@ -99,6 +99,8 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn('open.textContent = "Open"', script)
         self.assertIn('renderWorkspace(workspace, workspace.plan || "")', script)
         self.assertIn('remove.textContent = "Delete"', script)
+        self.assertIn('duplicate.textContent = "Duplicate"', script)
+        self.assertIn("tasks: original.tasks.map(task => ({ ...task }))", script)
         self.assertIn("localStorage.removeItem(entry.key)", script)
         self.assertIn("window.confirm(", script)
 
