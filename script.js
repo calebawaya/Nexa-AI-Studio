@@ -10,8 +10,14 @@ const chatMode = document.getElementById("chatMode");
 const exportIdeasButton = document.getElementById("exportIdeasButton");
 const clearChatButton = document.getElementById("clearChatButton");
 const chatCounter = document.getElementById("chatCounter");
+const exportIdeasButton = document.getElementById("exportIdeasButton");
+const clearChatButton = document.getElementById("clearChatButton");
+const chatCounter = document.getElementById("chatCounter");
 
 const STORAGE_KEY = "nexaAiStudioIdeas";
+const THEME_KEY = "nexaAiStudioTheme";
+const CHAT_KEY = "nexaAiStudioChat";
+const MAX_CHAT_MESSAGES = 50;
 const THEME_KEY = "nexaAiStudioTheme";
 const CHAT_KEY = "nexaAiStudioChat";
 const MAX_CHAT_MESSAGES = 50;
@@ -51,6 +57,7 @@ function renderIdeas() {
   const ideas = readIdeas();
   savedIdeas.replaceChildren();
   clearButton.hidden = ideas.length === 0;
+  if (exportIdeasButton) exportIdeasButton.hidden = ideas.length === 0;
   if (exportIdeasButton) exportIdeasButton.hidden = ideas.length === 0;
 
   ideas.forEach((idea, index) => {
