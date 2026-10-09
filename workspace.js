@@ -1,4 +1,5 @@
 const workspaceCard = document.getElementById("workspaceCard");
+const savedWorkspacesList = document.getElementById("savedWorkspacesList");
 const workspaceTitle = document.getElementById("workspaceTitle");
 const workspaceProgress = document.getElementById("workspaceProgress");
 const workspaceProgressBar = document.getElementById("workspaceProgressBar");
@@ -52,9 +53,63 @@ function readWorkspace(idea) {
   };
 }
 
+function listSavedWorkspaces() {
+  if (!savedWorkspacesList) return;
+  savedWorkspacesList.replaceChildren();
+  const entries = [];
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key || !key.startsWith(`${workspaceKey}:`)) continue;
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || "null");
+        if (saved && typeof saved.idea === "string" && saved.idea.trim() && Array.isArray(saved.tasks)) {
+          entries.push({ key, idea: saved.idea, name: typeof saved.name === "string" && saved.name.trim() ? saved.name : saved.idea, status: saved.status || "planning" });
+        }
+      } catch { /* Ignore malformed entries and keep listing other workspaces. */ }
+    }
+  } catch { /* Browser storage may be disabled. */ }
+
+  entries.sort((a, b) => a.name.localeCompare(b.name));
+  if (!entries.length) {
+    const empty = document.createElement("p");
+    empty.className = "saved-workspaces-empty";
+    empty.textContent = "No saved workspaces yet. Create a project workspace to get started.";
+    savedWorkspacesList.append(empty);
+    return;
+  }
+
+  entries.forEach(entry => {
+    const row = document.createElement("div");
+    row.className = "saved-workspace-row";
+    const details = document.createElement("div");
+    details.className = "saved-workspace-details";
+    const name = document.createElement("strong");
+    name.textContent = entry.name;
+    const idea = document.createElement("span");
+    idea.textContent = entry.idea;
+    const status = document.createElement("small");
+    status.textContent = `Status: ${entry.status}`;
+    details.append(name, idea, status);
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "clear-button";
+    open.textContent = "Open";
+    open.addEventListener("click", () => {
+      const workspace = readWorkspace(entry.idea);
+      renderWorkspace(workspace, "");
+      showWorkspaceNotice("Saved workspace opened. Import its JSON backup if you also need the generated plan.");
+      document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    row.append(details, open);
+    savedWorkspacesList.append(row);
+  });
+}
+
 function saveWorkspace(workspace) {
   try {
     localStorage.setItem(workspaceStorageKey(workspace.idea), JSON.stringify(workspace));
+    listSavedWorkspaces();
     return true;
   } catch {
     return false;
@@ -151,9 +206,12 @@ function createWorkspaceFromPlan() {
 
   const workspace = readWorkspace(idea);
   renderWorkspace(workspace, plan);
+  listSavedWorkspaces();
   if (!saveWorkspace(workspace)) showWorkspaceNotice("Workspace opened, but your browser could not save it. Export a backup.");
   document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+listSavedWorkspaces();
 
 const createWorkspaceButton = document.getElementById("createWorkspaceButton");
 if (createWorkspaceButton) createWorkspaceButton.addEventListener("click", createWorkspaceFromPlan);
