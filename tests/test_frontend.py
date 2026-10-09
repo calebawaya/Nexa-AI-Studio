@@ -54,6 +54,19 @@ class FrontendIntegrityTests(unittest.TestCase):
                 self.assertIsNotNone(asset)
                 self.assertTrue((ROOT / asset).is_file(), f"Missing local asset: {asset}")
 
+    def test_idea_planner_has_ai_and_fallback_paths(self):
+        script = (ROOT / "script.js").read_text(encoding="utf-8")
+        self.assertIn("async function generateIdeaPlan(idea)", script)
+        self.assertIn("/api/chat", script)
+        self.assertIn("AI-generated plan for:", script)
+        self.assertIn("Local starter plan", script)
+        self.assertIn("Nexa is preparing your project plan...", script)
+
+    def test_idea_planner_restores_submit_button_label(self):
+        script = (ROOT / "script.js").read_text(encoding="utf-8")
+        self.assertIn("originalSubmitText", script)
+        self.assertIn("submitButton.textContent = originalSubmitText;", script)
+
 
 if __name__ == "__main__":
     unittest.main()
