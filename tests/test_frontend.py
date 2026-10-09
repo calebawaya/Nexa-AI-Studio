@@ -44,7 +44,7 @@ class FrontendIntegrityTests(unittest.TestCase):
             "checkBackendButton", "clearChatButton", "chatCounter",
             "connectionStatus", "chatMessages", "customTaskForm",
             "customTaskInput", "exportWorkspaceButton", "importWorkspaceButton",
-            "importWorkspaceInput", "workspaceName",
+            "importWorkspaceInput", "savedWorkspacesPanel", "savedWorkspacesList", "workspaceName",
             "workspaceStatus", "workspaceNotes",
         ]
         for element_id in required:
@@ -91,6 +91,13 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn('importWorkspaceInput.addEventListener("change"', script)
         self.assertIn('backup?.app !== "Nexa AI Studio"', script)
         self.assertIn('Workspace backup imported successfully.', script)
+
+    def test_saved_workspaces_can_be_listed_and_reopened(self):
+        script = (ROOT / "workspace.js").read_text(encoding="utf-8")
+        self.assertIn("function listSavedWorkspaces()", script)
+        self.assertIn("localStorage.key(index)", script)
+        self.assertIn('open.textContent = "Open"', script)
+        self.assertIn("renderWorkspace(workspace, \"\" );".replace(" ", ""), script.replace(" ", ""))
 
 
 if __name__ == "__main__":
