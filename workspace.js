@@ -142,7 +142,8 @@ function createWorkspaceFromPlan() {
   const idea = ideaInput?.value.trim();
   const plan = result?.textContent.trim();
   if (!idea || !plan || plan === "Your next project begins with an idea." || plan.includes("preparing your project plan")) {
-    showWorkspaceNotice("Enter an idea and generate a plan before opening its workspace.");
+    const result = document.getElementById("result");
+    if (result) result.textContent = "Enter an idea and generate a plan before opening its workspace.";
     return;
   }
 
