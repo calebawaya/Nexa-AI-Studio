@@ -103,7 +103,26 @@ function listSavedWorkspaces() {
       showWorkspaceNotice("Saved workspace opened.");
       document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-    row.append(details, open);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "saved-workspace-delete";
+    remove.textContent = "Delete";
+    remove.setAttribute("aria-label", `Delete saved workspace: ${entry.name}`);
+    remove.addEventListener("click", () => {
+      if (!window.confirm(`Delete the saved workspace "${entry.name}"? This cannot be undone.`)) return;
+      try {
+        localStorage.removeItem(entry.key);
+        if (activeWorkspace && activeWorkspace.idea === entry.idea) {
+          activeWorkspace = null;
+          activePlan = "";
+          if (workspaceCard) workspaceCard.hidden = true;
+        }
+        listSavedWorkspaces();
+      } catch {
+        showWorkspaceNotice("Could not delete this workspace from browser storage.");
+      }
+    });
+    row.append(details, open, remove);
     savedWorkspacesList.append(row);
   });
 }
