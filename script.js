@@ -15,8 +15,7 @@ const STORAGE_KEY = "nexaAiStudioIdeas";
 const THEME_KEY = "nexaAiStudioTheme";
 const CHAT_KEY = "nexaAiStudioChat";
 const MAX_CHAT_MESSAGES = 50;
-// After deploying the Flask backend, replace the empty string with its HTTPS base URL.
-// Example: https://nexa-ai-studio-api.onrender.com
+// Deployed Flask backend. Keep this URL in sync with your Render service.
 const API_BASE_URL = "https://nexa-ai-studio-api.onrender.com";
 
 function safeReadJSON(key, fallback) {
@@ -265,6 +264,7 @@ chatForm.addEventListener("submit", event => {
   pending.className = "chat-message assistant-message";
   pending.textContent = API_BASE_URL.trim() ? "Thinking..." : "Preparing a local demo response...";
   chatMessages.append(pending);
+  chatMessages.setAttribute("aria-busy", "true");
   chatMessages.scrollTop = chatMessages.scrollHeight;
   chatInput.disabled = true;
   chatForm.querySelector("button[type=submit]").disabled = true;
@@ -279,6 +279,7 @@ chatForm.addEventListener("submit", event => {
     chatHistory = chatHistory.slice(-MAX_CHAT_MESSAGES);
     saveChatHistory();
   }).finally(() => {
+    chatMessages.setAttribute("aria-busy", "false");
     chatInput.disabled = false;
     chatForm.querySelector("button[type=submit]").disabled = false;
     chatInput.focus();
@@ -289,6 +290,7 @@ chatForm.addEventListener("submit", event => {
 document.querySelectorAll("[data-prompt]").forEach(button => {
   button.addEventListener("click", () => {
     chatInput.value = button.dataset.prompt || "";
+    updateChatCounter();
     chatInput.focus();
   });
 });
@@ -307,7 +309,14 @@ if (checkBackendButton && connectionStatus) {
     connectionStatus.dataset.state = "checking";
     try {
       const base = API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-      const response = await fetch(`${base}/api/health`, { method: "GET" });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      let response;
+      try {
+        response = await fetch(`${base}/api/health`, { method: "GET", signal: controller.signal });
+      } finally {
+        clearTimeout(timeoutId);
+      }
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data.status !== "ok") {
         throw new Error(data.error || `Health check failed (${response.status})`);
@@ -318,7 +327,8 @@ if (checkBackendButton && connectionStatus) {
       connectionStatus.dataset.state = data.ai_configured ? "success" : "warning";
       chatMode.textContent = data.ai_configured ? "Live AI backend connected" : "Backend online · AI setup needed";
     } catch (error) {
-      connectionStatus.textContent = `Could not reach the backend: ${error.message}. Check the service URL and CORS_ORIGINS.`;
+      const reason = error.name === "AbortError" ? "The health check timed out" : error.message;
+      connectionStatus.textContent = `Could not reach the backend: ${reason}. Check the service URL and CORS_ORIGINS.`;
       connectionStatus.dataset.state = "error";
     } finally {
       checkBackendButton.disabled = false;
