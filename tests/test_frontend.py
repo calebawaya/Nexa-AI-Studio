@@ -84,7 +84,7 @@ class FrontendIntegrityTests(unittest.TestCase):
     def test_workspace_supports_custom_tasks_and_backup_export(self):
         script = (ROOT / "workspace.js").read_text(encoding="utf-8")
         self.assertIn('customTaskForm.addEventListener("submit"', script)
-        self.assertIn('workspace.tasks.push({ text, done: false })', script)
+        self.assertIn('activeWorkspace.tasks.push({ text, done: false })', script)
         self.assertIn('nexa-workspace-${safeName}.json', script)
         self.assertIn('JSON.stringify(backup, null, 2)', script)
 
