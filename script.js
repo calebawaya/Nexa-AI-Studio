@@ -76,7 +76,7 @@ function renderIdeas() {
 
 function setAlternateGlow(enabled) {
   document.body.classList.toggle("alternate-glow", enabled);
-  themeButton.textContent = enabled ? "Blue glow" : "Change glow";
+  themeButton.textContent = enabled ? "Light mode" : "Dark mode";
   themeButton.setAttribute("aria-pressed", String(enabled));
   try { localStorage.setItem(THEME_KEY, enabled ? "alternate" : "blue"); } catch { /* Theme still works for this page view. */ }
 }
