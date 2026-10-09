@@ -30,6 +30,8 @@ def add_security_headers(response):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     response.headers.setdefault("X-Frame-Options", "DENY")
+    if request.path.startswith("/api/"):
+        response.headers.setdefault("Cache-Control", "no-store")
     return response
 
 
