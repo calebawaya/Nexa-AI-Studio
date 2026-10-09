@@ -42,3 +42,13 @@
 
 .workspace-actions { flex-wrap: wrap; gap: 10px; }
 .workspace-actions .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.saved-workspaces-panel { margin: 20px 0; padding: 18px; border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); }
+.saved-workspaces-panel h3 { margin: 0; }
+.saved-workspaces-panel > .builder-copy { margin: 6px 0 14px; }
+.saved-workspaces-list { display: grid; gap: 10px; }
+.saved-workspace-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px; border: 1px solid var(--panel-border); border-radius: 12px; }
+.saved-workspace-details { display: grid; gap: 4px; min-width: 0; }
+.saved-workspace-details span { overflow-wrap: anywhere; color: var(--muted); font-size: .9rem; }
+.saved-workspace-details small, .saved-workspaces-empty { color: var(--muted); }
+@media (max-width: 520px) { .saved-workspace-row { align-items: stretch; flex-direction: column; } .saved-workspace-row .clear-button { width: 100%; } }
