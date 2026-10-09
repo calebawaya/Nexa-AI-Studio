@@ -11,6 +11,8 @@ const workspaceNotes = document.getElementById("workspaceNotes");
 const customTaskForm = document.getElementById("customTaskForm");
 const customTaskInput = document.getElementById("customTaskInput");
 const exportWorkspaceButton = document.getElementById("exportWorkspaceButton");
+const importWorkspaceButton = document.getElementById("importWorkspaceButton");
+const importWorkspaceInput = document.getElementById("importWorkspaceInput");
 const workspaceKey = "nexaAiStudioWorkspace";
 
 const defaultTasks = [
@@ -210,6 +212,55 @@ if (exportWorkspaceButton) {
     const safeName = (activeWorkspace.name || "project").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "project";
     downloadTextFile(`nexa-workspace-${safeName}.json`, JSON.stringify(backup, null, 2), "application/json;charset=utf-8");
     showWorkspaceNotice("Workspace backup exported as JSON.");
+  });
+}
+
+
+if (importWorkspaceButton && importWorkspaceInput) {
+  importWorkspaceButton.addEventListener("click", () => {
+    importWorkspaceInput.value = "";
+    importWorkspaceInput.click();
+  });
+
+  importWorkspaceInput.addEventListener("change", async () => {
+    const file = importWorkspaceInput.files?.[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024) {
+      showWorkspaceNotice("Backup is too large. Choose a JSON file smaller than 1 MB.");
+      return;
+    }
+    try {
+      const backup = JSON.parse(await file.text());
+      const project = backup?.project;
+      if (
+        backup?.app !== "Nexa AI Studio" ||
+        !project ||
+        typeof project.idea !== "string" ||
+        !project.idea.trim() ||
+        !Array.isArray(project.tasks) ||
+        project.tasks.length > 100 ||
+        !project.tasks.every(task => task && typeof task.text === "string" && task.text.trim() && typeof task.done === "boolean")
+      ) {
+        throw new Error("invalid backup");
+      }
+      const restored = {
+        idea: project.idea.trim(),
+        name: typeof project.name === "string" && project.name.trim() ? project.name.trim().slice(0, 80) : project.idea.trim(),
+        status: ["planning", "building", "testing", "ready"].includes(project.status) ? project.status : "planning",
+        notes: typeof project.notes === "string" ? project.notes.slice(0, 2000) : "",
+        tasks: project.tasks.map(task => ({ text: task.text.trim().slice(0, 120), done: task.done })).filter(task => task.text)
+      };
+      const plan = typeof backup.plan === "string" ? backup.plan.slice(0, 20000) : "";
+      if (!saveWorkspace(restored)) {
+        showWorkspaceNotice("Could not save the imported workspace in this browser. Check available storage and try again.");
+        return;
+      }
+      renderWorkspace(restored, plan);
+      showWorkspaceNotice("Workspace backup imported successfully.");
+      document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch {
+      showWorkspaceNotice("That file is not a valid Nexa AI Studio workspace backup. Choose a JSON backup exported from Nexa.");
+    }
   });
 }
 
