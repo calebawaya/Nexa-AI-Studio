@@ -67,13 +67,17 @@ function listSavedWorkspaces() {
       try {
         const saved = JSON.parse(localStorage.getItem(key) || "null");
         if (saved && typeof saved.idea === "string" && saved.idea.trim() && Array.isArray(saved.tasks)) {
-          entries.push({ key, idea: saved.idea, name: typeof saved.name === "string" && saved.name.trim() ? saved.name : saved.idea, status: saved.status || "planning" });
+          entries.push({ key, idea: saved.idea, name: typeof saved.name === "string" && saved.name.trim() ? saved.name : saved.idea, status: saved.status || "planning", updatedAt: typeof saved.updatedAt === "string" ? saved.updatedAt : "" });
         }
       } catch { /* Ignore malformed entries and keep listing other workspaces. */ }
     }
   } catch { /* Browser storage may be disabled. */ }
 
-  entries.sort((a, b) => a.name.localeCompare(b.name));
+  entries.sort((a, b) => {
+    const aTime = Date.parse(a.updatedAt) || 0;
+    const bTime = Date.parse(b.updatedAt) || 0;
+    return bTime - aTime || a.name.localeCompare(b.name);
+  });
   if (!entries.length) {
     const empty = document.createElement("p");
     empty.className = "saved-workspaces-empty";
@@ -105,7 +109,12 @@ function listSavedWorkspaces() {
     idea.textContent = entry.idea;
     const status = document.createElement("small");
     status.textContent = `Status: ${entry.status}`;
-    details.append(name, idea, status);
+    const updated = document.createElement("small");
+    const updatedTime = Date.parse(entry.updatedAt);
+    updated.textContent = Number.isFinite(updatedTime) && updatedTime > 0
+      ? `Updated: ${new Date(updatedTime).toLocaleString()}`
+      : "Updated: time not recorded yet";
+    details.append(name, idea, status, updated);
     const open = document.createElement("button");
     open.type = "button";
     open.className = "clear-button";
@@ -172,6 +181,7 @@ function listSavedWorkspaces() {
 
 function saveWorkspace(workspace) {
   try {
+    workspace.updatedAt = new Date().toISOString();
     localStorage.setItem(workspaceStorageKey(workspace.idea), JSON.stringify(workspace));
     listSavedWorkspaces();
     return true;
