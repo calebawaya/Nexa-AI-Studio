@@ -121,7 +121,7 @@ function addChatMessage(message, role) {
 async function getAssistantReply(message) {
   if (API_BASE_URL.trim()) {
     try {
-      const response = await fetch(`${API_BASE_URL.replace(/\\/$/, "")}/api/chat`, {
+      const response = await fetch(`${API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message })
