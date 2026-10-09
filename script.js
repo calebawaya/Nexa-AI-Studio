@@ -11,7 +11,7 @@ const chatMode = document.getElementById("chatMode");
 const STORAGE_KEY = "nexaAiStudioIdeas";
 // After deploying the Flask backend, replace the empty string with its HTTPS base URL.
 // Example: https://nexa-ai-studio-api.onrender.com
-const API_BASE_URL = "";
+const API_BASE_URL = "https://nexa-ai-studio-api.onrender.com";
 
 function readIdeas() {
   try {
