@@ -14,6 +14,7 @@
     <nav aria-label="Main navigation">
       <a href="#features">Features</a>
       <a href="#builder">AI Builder</a>
+      <a href="#workspace">Workspace</a>
     </nav>
     <button id="themeButton" class="theme-button" type="button" aria-pressed="false">Dark mode</button>
   </header>
@@ -57,9 +58,22 @@
         <button class="primary-button" type="submit">Explore idea ↗</button>
       </form>
       <div id="result" class="result" role="status" aria-live="polite">Your next project begins with an idea.</div>
-      <div class="idea-actions"><button id="exportPlanButton" class="clear-button" type="button" hidden>Export project plan</button></div>
+      <div class="idea-actions"><button id="exportPlanButton" class="clear-button" type="button" hidden>Export project plan</button><button id="createWorkspaceButton" class="clear-button" type="button">Create project workspace</button></div>
       <div class="idea-actions"><button id="clearButton" class="clear-button" type="button" hidden>Clear saved ideas</button><button id="exportIdeasButton" class="clear-button" type="button" hidden>Export ideas</button></div>
       <div id="savedIdeas" class="saved-ideas" aria-label="Saved ideas"></div>
+    </section>
+    <section id="workspace" class="builder section workspace-section">
+      <p class="eyebrow">PROJECT WORKSPACE</p>
+      <h2 id="workspaceTitle">Turn your plan into progress.</h2>
+      <p class="builder-copy">Track the most important steps for your project directly in this browser. Your checklist is saved locally.</p>
+      <div id="workspaceCard" class="workspace-card" hidden>
+        <div class="workspace-header">
+          <div><p class="muted">CURRENT PROJECT</p><h3 id="workspaceIdea">Your project</h3></div>
+          <div class="workspace-progress"><strong id="workspaceProgress">0/5 tasks complete · 0%</strong><progress id="workspaceProgressBar" max="100" value="0">0%</progress></div>
+        </div>
+        <div id="workspaceTasks" class="workspace-tasks"></div>
+        <details class="workspace-plan"><summary>View generated plan</summary><pre id="workspacePlanPreview"></pre></details>
+      </div>
     </section>
   </main>
   <section id="assistant" class="assistant section">
@@ -86,5 +100,6 @@
   </section>
   <footer>© 2026 Nexa AI Studio <span>·</span> Built for big ideas.</footer>
   <script src="script.js"></script>
+  <script src="workspace.js"></script>
 </body>
 </html>
