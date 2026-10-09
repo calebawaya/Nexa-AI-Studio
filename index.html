@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070b18">
+  <meta name="description" content="Nexa AI Studio helps you turn ideas into websites and digital projects.">
+  <title>Nexa AI Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a href="#" class="logo" aria-label="Nexa AI Studio home">NEXA<span>AI</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#features">Features</a>
+      <a href="#builder">AI Builder</a>
+    </nav>
+    <button id="themeButton" class="theme-button" type="button">Change glow</button>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="orb orb-one" aria-hidden="true"></div>
+      <div class="orb orb-two" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="eyebrow">✦ YOUR IDEAS, POWERED BY AI</p>
+        <h1>Imagine it.<br>Build it <span>with AI.</span></h1>
+        <p class="description">Turn your ideas into websites, business plans, and digital projects with your own AI workspace.</p>
+        <a href="#builder" class="primary-button">Start building ↗</a>
+        <p class="note">Your next big idea starts here.</p>
+      </div>
+      <div class="preview-card">
+        <div class="preview-top"><span class="status-dot"></span>NEXA WORKSPACE<span class="live">ONLINE</span></div>
+        <div class="ai-symbol" aria-hidden="true">✳</div>
+        <p class="muted">YOUR CREATIVE ENGINE</p>
+        <h2>What will you create?</h2>
+        <div class="mini-feature">⌘ &nbsp; Website projects</div>
+        <div class="mini-feature">✧ &nbsp; AI-powered ideas</div>
+        <div class="mini-feature">◈ &nbsp; Your own workspace</div>
+      </div>
+    </section>
+    <section id="features" class="features section">
+      <p class="eyebrow">ONE WORKSPACE. MORE POSSIBILITIES.</p>
+      <h2>Build beyond limits.</h2>
+      <div class="feature-grid">
+        <article class="feature-card"><span aria-hidden="true">✳</span><h3>AI Assistant</h3><p>Explore ideas and get help planning your projects.</p></article>
+        <article class="feature-card"><span aria-hidden="true">⌘</span><h3>Website Studio</h3><p>Start designing your own digital experiences.</p></article>
+        <article class="feature-card"><span aria-hidden="true">◈</span><h3>Project Hub</h3><p>Keep your ideas and projects organized.</p></article>
+      </div>
+    </section>
+    <section id="builder" class="builder section">
+      <p class="eyebrow">YOUR FIRST PROJECT</p>
+      <h2>What do you want to build?</h2>
+      <p class="builder-copy">Describe your idea and Nexa will create a starter plan you can save.</p>
+      <form id="ideaForm">
+        <label class="sr-only" for="ideaInput">Describe your project idea</label>
+        <input id="ideaInput" type="text" placeholder="E.g. A website for my business..." maxlength="200" required>
+        <button class="primary-button" type="submit">Explore idea ↗</button>
+      </form>
+      <div id="result" class="result" role="status" aria-live="polite">Your next project begins with an idea.</div>
+      <button id="clearButton" class="clear-button" type="button" hidden>Clear saved ideas</button>
+      <div id="savedIdeas" class="saved-ideas" aria-label="Saved ideas"></div>
+    </section>
+  </main>
+  <footer>© 2026 Nexa AI Studio <span>·</span> Built for big ideas.</footer>
+  <script src="script.js"></script>
+</body>
+</html>
