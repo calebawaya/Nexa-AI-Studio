@@ -44,6 +44,17 @@ class NexaApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertIn("OPENAI_API_KEY", response.get_json()["error"])
 
+    def test_chat_rejects_non_object_json(self):
+        backend.client = FakeClient()
+        response = self.client.post("/api/chat", json=["not", "an", "object"])
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("JSON object", response.get_json()["error"])
+
+    def test_chat_rejects_malformed_json(self):
+        backend.client = FakeClient()
+        response = self.client.post("/api/chat", data="{bad json", content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
     def test_chat_rejects_empty_message(self):
         backend.client = FakeClient()
         response = self.client.post("/api/chat", json={"message": "   "})
