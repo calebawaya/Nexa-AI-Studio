@@ -67,6 +67,12 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn("originalSubmitText", script)
         self.assertIn("submitButton.textContent = originalSubmitText;", script)
 
+    def test_saved_ideas_can_be_loaded_into_planner(self):
+        script = (ROOT / "script.js").read_text(encoding="utf-8")
+        self.assertIn('useIdea.className = "load-idea"', script)
+        self.assertIn("ideaInput.value = idea;", script)
+        self.assertIn("Saved idea loaded.", script)
+
 
 if __name__ == "__main__":
     unittest.main()
