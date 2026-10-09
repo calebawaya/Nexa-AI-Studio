@@ -1,5 +1,6 @@
 const workspaceCard = document.getElementById("workspaceCard");
 const savedWorkspacesList = document.getElementById("savedWorkspacesList");
+const savedWorkspaceSearch = document.getElementById("savedWorkspaceSearch");
 const workspaceTitle = document.getElementById("workspaceTitle");
 const workspaceProgress = document.getElementById("workspaceProgress");
 const workspaceProgressBar = document.getElementById("workspaceProgressBar");
@@ -81,7 +82,19 @@ function listSavedWorkspaces() {
     return;
   }
 
-  entries.forEach(entry => {
+  const query = savedWorkspaceSearch?.value.trim().toLocaleLowerCase() || "";
+  const visibleEntries = entries.filter(entry =>
+    (entry.name + " " + entry.idea + " " + entry.status).toLocaleLowerCase().includes(query)
+  );
+  if (!visibleEntries.length) {
+    const empty = document.createElement("p");
+    empty.className = "saved-workspaces-empty";
+    empty.textContent = "No saved workspaces match your search.";
+    savedWorkspacesList.append(empty);
+    return;
+  }
+
+  visibleEntries.forEach(entry => {
     const row = document.createElement("div");
     row.className = "saved-workspace-row";
     const details = document.createElement("div");
@@ -234,6 +247,7 @@ function createWorkspaceFromPlan() {
 }
 
 listSavedWorkspaces();
+if (savedWorkspaceSearch) savedWorkspaceSearch.addEventListener("input", listSavedWorkspaces);
 
 const createWorkspaceButton = document.getElementById("createWorkspaceButton");
 if (createWorkspaceButton) createWorkspaceButton.addEventListener("click", createWorkspaceFromPlan);
