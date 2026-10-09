@@ -98,6 +98,9 @@ class FrontendIntegrityTests(unittest.TestCase):
         self.assertIn("localStorage.key(index)", script)
         self.assertIn('open.textContent = "Open"', script)
         self.assertIn('renderWorkspace(workspace, workspace.plan || "")', script)
+        self.assertIn('remove.textContent = "Delete"', script)
+        self.assertIn("localStorage.removeItem(entry.key)", script)
+        self.assertIn("window.confirm(", script)
 
 
     def test_generated_plan_is_persisted_and_restored_with_workspace(self):
