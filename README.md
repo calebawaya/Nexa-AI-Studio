@@ -37,7 +37,7 @@ After installing dependencies, run:
 python -m unittest discover -s tests -v
 ```
 
-These tests cover the health endpoint, missing API-key handling, chat input validation, and a mocked assistant reply. They do not call the paid AI API.
+These tests cover the health endpoint, missing API-key handling, malformed and non-object JSON, chat input validation, and a mocked assistant reply. They do not call the paid AI API. The frontend remembers the selected glow and up to 50 recent chat messages in this browser; saved ideas can be exported as a text file.
 
 ## Deploy the backend on Render
 
