@@ -56,3 +56,6 @@
 .saved-workspace-delete { border: 1px solid var(--panel-border); border-radius: 10px; padding: 9px 12px; background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
 .saved-workspace-delete:hover { border-color: var(--accent); color: var(--text); }
 .saved-workspace-row > .clear-button, .saved-workspace-row > .saved-workspace-delete { flex-shrink: 0; }
+
+.saved-workspace-search { display: block; width: 100%; margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--panel-border); border-radius: 12px; background: var(--background); color: var(--text); font: inherit; }
+.saved-workspace-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
