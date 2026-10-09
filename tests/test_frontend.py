@@ -105,9 +105,9 @@ class FrontendIntegrityTests(unittest.TestCase):
     def test_saved_workspaces_can_be_searched(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         script = (ROOT / "workspace.js").read_text(encoding="utf-8")
-        self.assertIn(\'id="savedWorkspaceSearch"\', html)
-        self.assertIn(\'savedWorkspaceSearch.addEventListener("input", listSavedWorkspaces)\', script)
-        self.assertIn(\'(entry.name + " " + entry.idea + " " + entry.status).toLocaleLowerCase().includes(query)\', script)
+        self.assertIn('id="savedWorkspaceSearch"', html)
+        self.assertIn('savedWorkspaceSearch.addEventListener("input", listSavedWorkspaces)', script)
+        self.assertIn('(entry.name + " " + entry.idea + " " + entry.status).toLocaleLowerCase().includes(query)', script)
         self.assertIn("No saved workspaces match your search.", script)
 
     def test_generated_plan_is_persisted_and_restored_with_workspace(self):
