@@ -64,9 +64,9 @@
   <section id="assistant" class="assistant section">
     <p class="eyebrow">NEXA PROJECT COMPANION</p>
     <h2>Talk through your next idea.</h2>
-    <p class="builder-copy">Ask for project ideas, a feature checklist, or a beginner-friendly next step. This preview runs in your browser; it is not connected to a live AI service yet.</p>
+    <p class="builder-copy">Ask for project ideas, a feature checklist, or a beginner-friendly next step. The chat works in local demo mode until you deploy the backend and add its URL in script.js.</p>
     <div class="chat-panel">
-      <div class="chat-heading"><span class="status-dot"></span><div><strong>Nexa Assistant</strong><small>Local demo · no account needed</small></div></div>
+      <div class="chat-heading"><span class="status-dot"></span><div class="chat-title"><strong>Nexa Assistant</strong><small id="chatMode">Local demo · no live backend configured</small></div><button id="checkBackendButton" class="connection-button" type="button">Check connection</button></div><p id="connectionStatus" class="connection-status" role="status" aria-live="polite">Local demo mode is active. Check the connection after deploying your backend.</p>
       <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
         <div class="chat-message assistant-message">Hi! Tell me what you want to build, and I’ll help you plan the first steps.</div>
       </div>
