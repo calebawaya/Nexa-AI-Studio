@@ -2,6 +2,7 @@ const themeButton = document.getElementById("themeButton");
 const ideaForm = document.getElementById("ideaForm");
 const ideaInput = document.getElementById("ideaInput");
 const result = document.getElementById("result");
+const exportPlanButton = document.getElementById("exportPlanButton");
 const savedIdeas = document.getElementById("savedIdeas");
 const clearButton = document.getElementById("clearButton");
 const checkBackendButton = document.getElementById("checkBackendButton");
@@ -115,6 +116,22 @@ if (exportIdeasButton) {
   });
 }
 
+if (exportPlanButton) {
+  exportPlanButton.addEventListener("click", () => {
+    const plan = result.textContent.trim();
+    if (!plan || plan === "Your next project begins with an idea.") return;
+    const blob = new Blob([plan + "\\n"], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "nexa-project-plan.txt";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  });
+}
+
 function makeLocalIdeaPlan(idea) {
   return `Your starter plan for: “${idea}”\n\n` +
     `1. Problem: Write the main problem this project solves.\n` +
@@ -192,6 +209,7 @@ ideaForm.addEventListener("submit", async event => {
 
   try {
     result.textContent = await generateIdeaPlan(idea);
+    if (exportPlanButton) exportPlanButton.hidden = false;
   } finally {
     result.setAttribute("aria-busy", "false");
     if (submitButton) {
